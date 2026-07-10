@@ -1,0 +1,61 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.pnp
+.pnp.js
+
+# turbo
+.turbo/
+
+# next.js
+.next/
+out/
+build/
+
+# build outputs
+dist/
+coverage/
+*.tsbuildinfo
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+!.env.example
+
+# vercel
+.vercel/
+
+# prisma generated files (if generated to custom folder later)
+generated/
+packages/db/generated/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# misc
+.DS_Store
+*.pem
+
+# editors
+.idea/
+.vscode/
+
+# runtime / cache
+.cache/
+.parcel-cache/
+.nyc_output/
+
+# optional test / pid files
+pids/
+*.pid
+*.pid.lock
+*.seed
