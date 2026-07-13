@@ -1,6 +1,8 @@
 export function HeroWireframe() {
   return (
-    <div className="frame scanlines relative overflow-hidden">
+    <div className="frame hero-shell scanlines relative overflow-hidden reveal-up delay-1">
+      <div className="hero-grid absolute inset-0 opacity-70" />
+      <div className="hero-glow absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-white/[0.03] blur-3xl" />
       <div className="orbit">
         <span />
         <span />
@@ -8,47 +10,51 @@ export function HeroWireframe() {
         <span />
       </div>
 
-      <div className="frame-inner relative grid min-h-[520px] grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="flex flex-col justify-between border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
-          <div className="space-y-6">
-            <p className="kicker">Competitive programming intelligence</p>
-            <h1 className="hero-title max-w-[10ch]">
+      <div className="frame-inner relative grid min-h-[760px] grid-cols-1 lg:grid-cols-[1.02fr_0.98fr]">
+        <div className="flex flex-col justify-between gap-10 border-b border-white/10 p-8 lg:border-b-0 lg:border-r lg:p-10">
+          <div className="space-y-6 pt-2">
+            <p className="kicker reveal-up delay-1">
+              Competitive programming intelligence
+            </p>
+
+            <h1 className="hero-title reveal-up delay-2">
               Practice where weakness becomes signal.
             </h1>
-            <p className="muted-copy max-w-xl text-base md:text-lg">
+
+            <p className="muted-copy reveal-up delay-3 max-w-2xl text-base md:text-lg">
               Import Codeforces, LeetCode, and AtCoder data. Detect weak topics,
               forecast rating movement, and generate a focused training system.
             </p>
           </div>
 
-          <div className="grid gap-4 pt-10 md:grid-cols-2">
-            <div className="frame-inner bg-white/[0.02] p-4">
-              <p className="kicker mb-3">Weakest zones</p>
-              <ul className="space-y-2 text-sm text-white/80">
+          <div className="grid gap-4 pt-4 md:grid-cols-2">
+            <div className="frame-inner panel-card reveal-up delay-3 p-5">
+              <p className="kicker mb-4">Weakest zones</p>
+              <ul className="space-y-3 text-sm text-white/80">
                 <li>Dynamic Programming</li>
                 <li>Binary Search Boundaries</li>
                 <li>Number Theory</li>
               </ul>
             </div>
 
-            <div className="frame-inner bg-white/[0.02] p-4">
-              <p className="kicker mb-3">Projected climb</p>
-              <p className="text-4xl font-semibold tracking-[-0.06em]">+173</p>
-              <p className="mt-2 text-sm text-white/60">
+            <div className="frame-inner panel-card reveal-up delay-4 p-5">
+              <p className="kicker mb-4">Projected climb</p>
+              <p className="text-5xl font-semibold tracking-[-0.06em]">+173</p>
+              <p className="mt-3 text-sm text-white/60">
                 Estimated rating movement in the next focused cycle.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="relative min-h-[420px] overflow-hidden p-6">
+        <div className="relative min-h-[520px] overflow-hidden p-6 lg:p-8">
           <div className="float-wire absolute inset-8">
             <div className="absolute inset-x-0 top-0 flex justify-between text-[10px] uppercase tracking-[0.22em] text-white/35">
               <span>Signal mesh</span>
               <span>Realtime intelligence layer</span>
             </div>
 
-            <div className="absolute inset-0 mt-10 border border-white/10">
+            <div className="absolute inset-0 mt-10 border border-white/10 bg-white/[0.015]">
               <div className="circuit-bg absolute inset-0" />
 
               <svg
@@ -66,23 +72,8 @@ export function HeroWireframe() {
                 </g>
 
                 <g opacity="0.95">
-                  <rect
-                    x="300"
-                    y="235"
-                    width="210"
-                    height="170"
-                    rx="8"
-                    stroke="rgba(255,255,255,0.55)"
-                  />
-                  <rect
-                    x="332"
-                    y="266"
-                    width="146"
-                    height="108"
-                    rx="6"
-                    fill="rgba(255,255,255,0.06)"
-                    stroke="rgba(255,255,255,0.25)"
-                  />
+                  <rect x="300" y="235" width="210" height="170" rx="8" stroke="rgba(255,255,255,0.55)" />
+                  <rect x="332" y="266" width="146" height="108" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" />
                   <circle cx="185" cy="180" r="48" stroke="rgba(255,255,255,0.24)" />
                   <circle cx="630" cy="178" r="60" stroke="rgba(255,255,255,0.24)" />
                   <circle cx="180" cy="548" r="68" stroke="rgba(255,255,255,0.2)" />
@@ -102,13 +93,13 @@ export function HeroWireframe() {
                 </g>
               </svg>
 
-              <div className="absolute left-6 top-6 border border-white/15 bg-black/60 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-white/60">
+              <div className="absolute left-6 top-6 border border-white/15 bg-black/65 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-white/60">
                 Data ingestion
               </div>
 
-              <div className="absolute bottom-6 right-6 max-w-[220px] border border-white/15 bg-black/60 p-3">
+              <div className="absolute bottom-6 right-6 max-w-[260px] border border-white/15 bg-black/65 p-4 backdrop-blur-md">
                 <p className="kicker mb-2">Engine output</p>
-                <p className="text-sm leading-6 text-white/70">
+                <p className="text-sm leading-6 text-white/72">
                   Weak topic detection, contest prediction, and daily problem
                   sequencing.
                 </p>
