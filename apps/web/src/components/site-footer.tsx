@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, BookOpenText } from "lucide-react";
+import { BookOpenText } from "lucide-react";
 
 const NAV = [
   { label: "Features", href: "#features" },
@@ -32,7 +32,11 @@ export function SiteFooter() {
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-text-secondary">Navigation</p>
           <div className="mt-4 flex flex-col gap-3">
             {NAV.map((item) => (
-              <a key={item.label} href={item.href} className="font-body text-sm text-text-secondary transition-colors hover:text-text-primary">
+              <a
+                key={item.label}
+                href={item.href}
+                className="font-body text-sm text-text-secondary transition-colors hover:text-text-primary"
+              >
                 {item.label}
               </a>
             ))}
@@ -41,15 +45,33 @@ export function SiteFooter() {
 
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-text-secondary">Elsewhere</p>
-          <div className="mt-4 flex items-center gap-4 text-text-secondary">
-            <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-              <Github className="h-4 w-4 transition-colors hover:text-text-primary" />
+
+          <div className="mt-4 flex items-center gap-4 text-sm text-text-secondary">
+            <Link
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-text-primary"
+            >
+              GitHub
             </Link>
-            <Link href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">
-              <Twitter className="h-4 w-4 transition-colors hover:text-text-primary" />
+
+            <Link
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-text-primary"
+            >
+              X
             </Link>
-            <Link href="#docs" aria-label="Docs">
-              <BookOpenText className="h-4 w-4 transition-colors hover:text-text-primary" />
+
+            <Link
+              href="#docs"
+              aria-label="Docs"
+              className="inline-flex items-center gap-2 transition-colors hover:text-text-primary"
+            >
+              <BookOpenText className="h-4 w-4" />
+              <span>Docs</span>
             </Link>
           </div>
 
