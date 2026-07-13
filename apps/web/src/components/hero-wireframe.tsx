@@ -24,12 +24,13 @@ export function HeroWireframe() {
           <div className="grid gap-4 pt-10 md:grid-cols-2">
             <div className="frame-inner bg-white/[0.02] p-4">
               <p className="kicker mb-3">Weakest zones</p>
-              <ul className="space-y-2 text-sm text-white/7878">
-                >Dynamic Programming</l/li>
-                >Binary Search Boundaries</l/li>
-                >Number Theory</li>
+              <ul className="space-y-2 text-sm text-white/80">
+                <li>Dynamic Programming</li>
+                <li>Binary Search Boundaries</li>
+                <li>Number Theory</li>
               </ul>
             </div>
+
             <div className="frame-inner bg-white/[0.02] p-4">
               <p className="kicker mb-3">Projected climb</p>
               <p className="text-4xl font-semibold tracking-[-0.06em]">+173</p>
@@ -65,24 +66,39 @@ export function HeroWireframe() {
                 </g>
 
                 <g opacity="0.95">
-                  <rect x="300" y="235" width="210" height="170" rx="8" stroke="rgba(255,255,255,0.55)" />
-                  <rect x="332" y="266" width="146" height="108" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" />
-                  ircle cx="185" cy="180" r="48" stroke="rgba(255,255,255,0.24)" />
-                  ircle cx="630" cy="178" r="60" stroke="rgba(255,255,255,0.24)" />
-                  ircle cx="180" cy="548" r="68" stroke="rgba(255,255,255,0.2)" />
-                  ircle cx="625" cy="555" r="54" stroke="rgba(255,255,255,0.2)" />
+                  <rect
+                    x="300"
+                    y="235"
+                    width="210"
+                    height="170"
+                    rx="8"
+                    stroke="rgba(255,255,255,0.55)"
+                  />
+                  <rect
+                    x="332"
+                    y="266"
+                    width="146"
+                    height="108"
+                    rx="6"
+                    fill="rgba(255,255,255,0.06)"
+                    stroke="rgba(255,255,255,0.25)"
+                  />
+                  <circle cx="185" cy="180" r="48" stroke="rgba(255,255,255,0.24)" />
+                  <circle cx="630" cy="178" r="60" stroke="rgba(255,255,255,0.24)" />
+                  <circle cx="180" cy="548" r="68" stroke="rgba(255,255,255,0.2)" />
+                  <circle cx="625" cy="555" r="54" stroke="rgba(255,255,255,0.2)" />
                   <rect x="88" y="150" width="74" height="64" stroke="rgba(255,255,255,0.22)" />
                   <rect x="600" y="500" width="84" height="84" stroke="rgba(255,255,255,0.22)" />
                 </g>
 
                 <g fill="white">
-                  ircle cx="320" cy="360" r="4" />
-                  ircle cx="510" cy="360" r="4" />
-                  ircle cx="340" cy="305" r="4" />
-                  ircle cx="520" cy="305" r="4" />
-                  ircle cx="360" cy="470" r="4" />
-                  ircle cx="560" cy="250" r="4" />
-                  ircle cx="430" cy="350" r="4" />
+                  <circle cx="320" cy="360" r="4" />
+                  <circle cx="510" cy="360" r="4" />
+                  <circle cx="340" cy="305" r="4" />
+                  <circle cx="520" cy="305" r="4" />
+                  <circle cx="360" cy="470" r="4" />
+                  <circle cx="560" cy="250" r="4" />
+                  <circle cx="430" cy="350" r="4" />
                 </g>
               </svg>
 
@@ -93,7 +109,8 @@ export function HeroWireframe() {
               <div className="absolute bottom-6 right-6 max-w-[220px] border border-white/15 bg-black/60 p-3">
                 <p className="kicker mb-2">Engine output</p>
                 <p className="text-sm leading-6 text-white/70">
-                  Weak topic detection, contest prediction, and daily problem sequencing.
+                  Weak topic detection, contest prediction, and daily problem
+                  sequencing.
                 </p>
               </div>
             </div>
