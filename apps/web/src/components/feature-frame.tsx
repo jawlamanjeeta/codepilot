@@ -36,16 +36,16 @@ export function FeatureFrame({
                     stroke="rgba(255,255,255,0.12)"
                   />
                 ))}
-                ircle cx="120" cy="168" r="10" fill="white" />
-                ircle cx="220" cy="260" r="10" fill="white" />
-                ircle cx="80" cy="290" r="10" fill="white" />
+                <circle cx="120" cy="168" r="10" fill="white" />
+                <circle cx="220" cy="260" r="10" fill="white" />
+                <circle cx="80" cy="290" r="10" fill="white" />
               </svg>
             </div>
           )}
 
           {mode === "folders" && (
             <div className="absolute inset-0 p-6">
-              <div className="grid h-full grid-cols-3 gap-6">
+              <div className="grid h-full grid-cols-1 gap-6 md:grid-cols-3">
                 {[
                   "Weak topic detection",
                   "Personalized roadmap",
@@ -70,10 +70,34 @@ export function FeatureFrame({
             <div className="absolute inset-0">
               <div className="diagram-dots absolute inset-6 rounded-none border border-white/10" />
               <svg viewBox="0 0 800 420" className="absolute inset-0 h-full w-full" fill="none">
-                ircle cx="350" cy="210" r="96" stroke="rgba(255,255,255,0.24)" strokeDasharray="3 9" />
-                ircle cx="350" cy="210" r="142" stroke="rgba(255,255,255,0.18)" strokeDasharray="3 11" />
-                ircle cx="350" cy="210" r="188" stroke="rgba(255,255,255,0.14)" strokeDasharray="2 12" />
-                <rect x="530" y="72" width="180" height="250" stroke="rgba(255,255,255,0.14)" />
+                <circle
+                  cx="350"
+                  cy="210"
+                  r="96"
+                  stroke="rgba(255,255,255,0.24)"
+                  strokeDasharray="3 9"
+                />
+                <circle
+                  cx="350"
+                  cy="210"
+                  r="142"
+                  stroke="rgba(255,255,255,0.18)"
+                  strokeDasharray="3 11"
+                />
+                <circle
+                  cx="350"
+                  cy="210"
+                  r="188"
+                  stroke="rgba(255,255,255,0.14)"
+                  strokeDasharray="2 12"
+                />
+                <rect
+                  x="530"
+                  y="72"
+                  width="180"
+                  height="250"
+                  stroke="rgba(255,255,255,0.14)"
+                />
               </svg>
             </div>
           )}
@@ -81,7 +105,8 @@ export function FeatureFrame({
           <div className="absolute bottom-6 left-6 max-w-xs border border-white/15 bg-black/70 p-3">
             <p className="kicker mb-2">CodePilot layer</p>
             <p className="text-sm leading-6 text-white/70">
-              Transform raw profile activity into structured insight, targeted practice, and visual trend intelligence.
+              Transform raw profile activity into structured insight, targeted practice,
+              and visual trend intelligence.
             </p>
           </div>
         </div>
