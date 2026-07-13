@@ -1,19 +1,15 @@
+import { ReactLenis } from "lenis/react";
 import "./globals.css";
-import type { Metadata } from "next";
+import "@/styles/token.css";
 
-export const metadata: Metadata = {
-  title: "CodePilot",
-  description: "Competitive programming intelligence platform"
-};
-
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-void font-body text-text-primary">
+        <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothWheel: true }}>
+          {children}
+        </ReactLenis>
+      </body>
     </html>
   );
 }
