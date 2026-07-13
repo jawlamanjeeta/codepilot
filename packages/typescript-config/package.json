@@ -1,0 +1,9 @@
+{
+  "name": "@codepilot/typescript-config",
+  "private": true,
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "node.json"
+  ]
+}

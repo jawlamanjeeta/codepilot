@@ -1,0 +1,21 @@
+{
+  "name": "@codepilot/db",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.17.0"
+  },
+  "devDependencies": {
+    "@codepilot/typescript-config": "workspace:*",
+    "prisma": "^5.17.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "@codepilot/eslint-config",
+  "private": true,
+  "main": "base.js"
+}
