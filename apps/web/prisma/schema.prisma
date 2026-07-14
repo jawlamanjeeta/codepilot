@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Platform {
+  CODEFORCES
+  LEETCODE
+  ATCODER
+  CODECHEF
+}
+
+enum SyncStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum Verdict {
+  ACCEPTED
+  WRONG_ANSWER
+  TLE
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+  OTHER
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  image         String?
+  createdAt     DateTime        @default(now())
+  linkedAccounts LinkedAccount[]
+  submissions    Submission[]
+  syncJobs       SyncJob[]
+}
+
+model LinkedAccount {
+  id             String     @id @default(cuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id])
+  platform       Platform
+  handle         String
+  status         String     @default("connected")
+  lastSyncedAt   DateTime?
+  lastError      String?
+  createdAt      DateTime   @default(now())
+
+  @@unique([userId, platform])
+}
+
+model Problem {
+  id           String   @id @default(cuid())
+  platform     Platform
+  problemKey   String
+  title        String
+  rating       Int?
+  difficulty   String?
+  tags         String[]
+  url          String?
+
+  @@unique([platform, problemKey])
+}
+
+model Contest {
+  id          String   @id @default(cuid())
+  platform    Platform
+  contestKey  String
+  name        String
+  startTime   DateTime?
+  durationSec Int?
+  url         String?
+
+  @@unique([platform, contestKey])
+}
+
+model Submission {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id])
+  platform              Platform
+  externalSubmissionId  String
+  problemId             String
+  problem               Problem   @relation(fields: [problemId], references: [id])
+  contestId             String?
+  contest               Contest?  @relation(fields: [contestId], references: [id])
+  verdict               Verdict
+  language              String?
+  submittedAt           DateTime
+  executionTimeMs       Int?
+
+  @@unique([platform, externalSubmissionId])
+  @@index([userId, submittedAt])
+}
+
+model SyncJob {
+  id              String     @id @default(cuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  platform        Platform
+  status          SyncStatus @default(QUEUED)
+  startedAt       DateTime   @default(now())
+  finishedAt      DateTime?
+  itemsProcessed  Int        @default(0)
+  errorMessage    String?
+}
