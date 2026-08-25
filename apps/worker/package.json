@@ -7,7 +7,12 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@codepilot/db": "workspace:*",
+    "@codepilot/shared": "workspace:*",
+    "bullmq": "^5.51.0",
+    "ioredis": "^5.4.1"
+  },
   "devDependencies": {
     "@codepilot/typescript-config": "workspace:*",
     "@types/node": "^22.7.4",
