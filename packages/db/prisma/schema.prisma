@@ -8,11 +8,47 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
 enum Platform {
   CODEFORCES
   LEETCODE
   ATCODER
 }
+
+enum Verdict {
+  ACCEPTED
+  WRONG_ANSWER
+  TLE
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+  OTHER
+}
+
+enum SyncStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum LinkedAccountStatus {
+  connected
+  error
+  pending
+}
+
+enum RecommendationStatus {
+  pending
+  solved
+  skipped
+}
+
+// ---------------------------------------------------------------------------
+// Auth models (NextAuth)
+// ---------------------------------------------------------------------------
 
 model User {
   id            String    @id @default(cuid())
@@ -23,9 +59,14 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts         Account[]
-  sessions         Session[]
-  platformAccounts PlatformAccount[]
+  accounts        Account[]
+  sessions        Session[]
+  linkedAccounts  LinkedAccount[]
+  submissions     Submission[]
+  syncJobs        SyncJob[]
+  topicStats      TopicStat[]
+  dailyActivities DailyActivity[]
+  recommendations Recommendation[]
 }
 
 model Account {
@@ -71,19 +112,192 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model PlatformAccount {
-  id           String    @id @default(cuid())
+// ---------------------------------------------------------------------------
+// Platform linking
+// ---------------------------------------------------------------------------
+
+/// Replaces the old PlatformAccount — tracks each platform handle a user links.
+model LinkedAccount {
+  id           String              @id @default(cuid())
   userId       String
   platform     Platform
   handle       String
   rating       Int?
   maxRating    Int?
+  status       LinkedAccountStatus @default(pending)
   lastSyncedAt DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  lastError    String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syncJobs SyncJob[]
+
+  @@unique([userId, platform])
+  @@index([userId, platform])
+}
+
+// ---------------------------------------------------------------------------
+// Problems & Contests (platform-agnostic catalogue)
+// ---------------------------------------------------------------------------
+
+model Problem {
+  id         String   @id @default(cuid())
+  platform   Platform
+  problemKey String   // e.g. "1500A", "two-sum", "abc123_a"
+  title      String
+  rating     Int?     // Codeforces difficulty / LeetCode difficulty band
+  tags       String[] // DP, Graphs, Greedy, …
+
+  submissions Submission[]
+  recommendations Recommendation[]
+
+  @@unique([platform, problemKey])
+  @@index([platform])
+  @@index([rating])
+}
+
+model Contest {
+  id          String   @id @default(cuid())
+  platform    Platform
+  contestKey  String   // "1500", "abc123", etc.
+  name        String
+  startTime   DateTime?
+  durationSec Int?
+
+  submissions      Submission[]
+  participations   ContestParticipation[]
+
+  @@unique([platform, contestKey])
+  @@index([platform])
+}
+
+/// Per-user contest participation record (rating changes etc.)
+model ContestParticipation {
+  id            String   @id @default(cuid())
+  userId        String
+  contestId     String
+  rank          Int?
+  ratingBefore  Int?
+  ratingAfter   Int?
+  ratingDelta   Int?
+  solvedCount   Int?
+  createdAt     DateTime @default(now())
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contestId])
+  @@index([userId])
+  @@index([contestId])
+}
+
+// ---------------------------------------------------------------------------
+// Submissions
+// ---------------------------------------------------------------------------
+
+model Submission {
+  id                   String   @id @default(cuid())
+  userId               String
+  platform             Platform
+  externalSubmissionId String
+  problemId            String
+  contestId            String?
+  verdict              Verdict
+  language             String?
+  submittedAt          DateTime
+  createdAt            DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  contest Contest? @relation(fields: [contestId], references: [id], onDelete: SetNull)
+
+  @@unique([platform, externalSubmissionId])
+  @@index([userId])
+  @@index([userId, platform])
+  @@index([userId, submittedAt])
+  @@index([problemId])
+}
+
+// ---------------------------------------------------------------------------
+// Background sync jobs
+// ---------------------------------------------------------------------------
+
+model SyncJob {
+  id              String     @id @default(cuid())
+  userId          String
+  linkedAccountId String?
+  platform        Platform
+  status          SyncStatus @default(PENDING)
+  itemsProcessed  Int        @default(0)
+  errorMessage    String?
+  startedAt       DateTime   @default(now())
+  finishedAt      DateTime?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedAccount LinkedAccount? @relation(fields: [linkedAccountId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, platform])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Analytics aggregates (pre-computed, refreshed after each sync)
+// ---------------------------------------------------------------------------
+
+/// Per-user, per-topic aggregate — the core of the weak-topic detection engine.
+model TopicStat {
+  id           String   @id @default(cuid())
+  userId       String
+  topic        String   // normalised tag, e.g. "dynamic-programming"
+  attemptCount Int      @default(0)
+  solvedCount  Int      @default(0)
+  wrongCount   Int      @default(0)
+  avgRating    Float?
+  skillScore   Float    @default(0) // 0–100, computed by scoring engine
+  lastUpdatedAt DateTime @default(now()) @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([platform, handle])
-  @@index([userId, platform])
+  @@unique([userId, topic])
+  @@index([userId])
+  @@index([userId, skillScore])
+}
+
+/// Daily activity grid — powers the activity heatmap.
+model DailyActivity {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime @db.Date
+  solvedCount  Int      @default(0)
+  attemptCount Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([userId, date])
+}
+
+// ---------------------------------------------------------------------------
+// Recommendation engine output
+// ---------------------------------------------------------------------------
+
+model Recommendation {
+  id        String               @id @default(cuid())
+  userId    String
+  problemId String
+  reason    String               // human-readable: "Weak topic: DP", "Rating gap", …
+  priority  Float                @default(0) // higher = more urgent
+  status    RecommendationStatus @default(pending)
+  expiresAt DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, priority])
 }
