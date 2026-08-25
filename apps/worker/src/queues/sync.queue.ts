@@ -48,7 +48,7 @@ async function fetchCodforces(handle: string): Promise<RawSubmission[]> {
   const res = await fetch(
     `https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=500`
   );
-  const data = await res.json();
+  const data = (await res.json()) as any;
   if (data.status !== "OK") throw new Error(data.comment ?? "Codeforces fetch failed");
 
   const verdictMap: Record<string, Verdict> = {
@@ -81,7 +81,7 @@ async function fetchLeetCode(handle: string): Promise<RawSubmission[]> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables: { username: handle } }),
   });
-  const { data } = await res.json();
+  const data = (await res.json()) as any;
 
   const verdictMap: Record<string, Verdict> = {
     Accepted: "ACCEPTED", "Wrong Answer": "WRONG_ANSWER",
@@ -89,7 +89,7 @@ async function fetchLeetCode(handle: string): Promise<RawSubmission[]> {
     "Compile Error": "COMPILATION_ERROR",
   };
 
-  return (data?.recentSubmissionList ?? []).map((s: any): RawSubmission => ({
+  return (data?.data?.recentSubmissionList ?? []).map((s: any): RawSubmission => ({
     externalSubmissionId: `${s.titleSlug}-${s.timestamp}`,
     problemKey:  s.titleSlug,
     problemTitle: s.title,
@@ -104,14 +104,14 @@ async function fetchAtCoder(handle: string): Promise<RawSubmission[]> {
   const res = await fetch(
     `https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user=${encodeURIComponent(handle)}&from_second=0`
   );
-  const data = await res.json();
+  const data = (await res.json()) as any;
 
   const verdictMap: Record<string, Verdict> = {
     AC: "ACCEPTED", WA: "WRONG_ANSWER", TLE: "TLE",
     RE: "RUNTIME_ERROR", CE: "COMPILATION_ERROR",
   };
 
-  return data.map((s: any): RawSubmission => ({
+  return (Array.isArray(data) ? data : []).map((s: any): RawSubmission => ({
     externalSubmissionId: String(s.id),
     problemKey:  s.problem_id,
     problemTitle: s.problem_id,

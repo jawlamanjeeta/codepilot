@@ -85,7 +85,7 @@ export const ADVANCED_TOPICS: Topic[] = [
  * Unmapped tags are dropped (not stored as topic stats).
  */
 export const TAG_NORMALISATION_MAP: Record<string, Topic> = {
-  // Codeforces tags
+  // Common / Codeforces / LeetCode merged mappings (unique keys)
   "dp": "dynamic-programming",
   "dynamic programming": "dynamic-programming",
   "graphs": "graphs",
@@ -114,6 +114,7 @@ export const TAG_NORMALISATION_MAP: Record<string, Topic> = {
   "game theory": "game-theory",
   "hashing": "hash-tables",
   "shortest paths": "shortest-path",
+  "shortest path": "shortest-path",
   "minimum spanning tree": "minimum-spanning-tree",
   "segment tree": "segment-trees",
   "fenwick tree": "fenwick-trees",
@@ -124,7 +125,6 @@ export const TAG_NORMALISATION_MAP: Record<string, Topic> = {
   "interactive": "interactive",
   "simulation": "simulation",
   "trie": "tries",
-  // LeetCode tags
   "array": "arrays",
   "hash table": "hash-tables",
   "linked list": "linked-lists",
@@ -137,25 +137,11 @@ export const TAG_NORMALISATION_MAP: Record<string, Topic> = {
   "monotonic stack": "stacks",
   "stack": "stacks",
   "queue": "queues",
-  "union find": "union-find",
-  "segment tree": "segment-trees",
   "binary indexed tree": "fenwick-trees",
-  "divide and conquer": "divide-and-conquer",
   "memoization": "memoization",
   "bit manipulation": "bitmask-dp",
   "recursion": "recursion",
-  "backtracking": "backtracking",
-  "binary search": "binary-search",
   "binary search tree": "binary-search-trees",
   "binary tree": "binary-trees",
-  "tree": "trees",
-  "graph": "graphs",
-  "topological sort": "topological-sort",
-  "shortest path": "shortest-path",
-  "trie": "tries",
-  "geometry": "geometry",
-  "game theory": "game-theory",
-  "greedy": "greedy",
-  "simulation": "simulation",
   "counting": "combinatorics",
 };
