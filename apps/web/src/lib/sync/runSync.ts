@@ -1,57 +1,72 @@
-import { db } from "@/lib/db";
+import { prisma } from "@codepilot/db";
 import { platformAdapters } from "@/lib/platforms";
+import type { Platform } from "@codepilot/db";
 
-export async function runSync(userId: string, platform: string, handle: string) {
-  const job = await db.syncJob.create({
-    data: { userId, platform: platform as any, status: "RUNNING" },
+export async function runSync(userId: string, platform: Platform, handle: string) {
+  // Find the linked account to get its id
+  const linkedAccount = await prisma.linkedAccount.findUnique({
+    where: { userId_platform: { userId, platform } },
+  });
+
+  // Create a sync job record
+  const job = await prisma.syncJob.create({
+    data: {
+      userId,
+      platform,
+      linkedAccountId: linkedAccount?.id,
+      status: "RUNNING",
+    },
   });
 
   try {
     const adapter = platformAdapters[platform];
-    if (!adapter) throw new Error(`no adapter for platform ${platform}`);
+    if (!adapter) throw new Error(`No adapter registered for platform: ${platform}`);
 
     const submissions = await adapter.fetchSubmissions(handle);
     let processed = 0;
 
     for (const s of submissions) {
-      const problem = await db.problem.upsert({
-        where: { platform_problemKey: { platform: platform as any, problemKey: s.problemKey } },
+      // 1. Upsert the problem catalogue entry
+      const problem = await prisma.problem.upsert({
+        where: { platform_problemKey: { platform, problemKey: s.problemKey } },
         update: { title: s.problemTitle, rating: s.rating, tags: s.tags },
         create: {
-          platform: platform as any,
+          platform,
           problemKey: s.problemKey,
           title: s.problemTitle,
-          rating: s.rating,
+          rating: s.rating ?? null,
           tags: s.tags,
         },
       });
 
+      // 2. Optionally upsert the contest
       let contestId: string | undefined;
       if (s.contestKey) {
-        const contest = await db.contest.upsert({
-          where: { platform_contestKey: { platform: platform as any, contestKey: s.contestKey } },
+        const contest = await prisma.contest.upsert({
+          where: { platform_contestKey: { platform, contestKey: s.contestKey } },
           update: {},
-          create: { platform: platform as any, contestKey: s.contestKey, name: s.contestKey },
+          create: { platform, contestKey: s.contestKey, name: s.contestKey },
         });
         contestId = contest.id;
       }
 
-      await db.submission.upsert({
+      // 3. Upsert the submission (idempotent on externalSubmissionId)
+      await prisma.submission.upsert({
         where: {
           platform_externalSubmissionId: {
-            platform: platform as any,
+            platform,
             externalSubmissionId: s.externalSubmissionId,
           },
         },
         update: {},
         create: {
           userId,
-          platform: platform as any,
+          platform,
           externalSubmissionId: s.externalSubmissionId,
           problemId: problem.id,
-          contestId,
-          verdict: s.verdict as any,
-          language: s.language,
+          contestId: contestId ?? null,
+          verdict: s.verdict,
+          language: s.language ?? null,
           submittedAt: s.submittedAt,
         },
       });
@@ -59,23 +74,27 @@ export async function runSync(userId: string, platform: string, handle: string) 
       processed++;
     }
 
-    await db.syncJob.update({
+    // Mark job as succeeded
+    await prisma.syncJob.update({
       where: { id: job.id },
       data: { status: "SUCCESS", finishedAt: new Date(), itemsProcessed: processed },
     });
 
-    await db.linkedAccount.updateMany({
-      where: { userId, platform: platform as any },
-      data: { lastSyncedAt: new Date(), status: "connected", lastError: null },
+    // Update linked account status
+    await prisma.linkedAccount.update({
+      where: { userId_platform: { userId, platform } },
+      data: { status: "connected", lastSyncedAt: new Date(), lastError: null },
     });
+
+    return { processed };
   } catch (err: any) {
-    await db.syncJob.update({
+    await prisma.syncJob.update({
       where: { id: job.id },
       data: { status: "FAILED", finishedAt: new Date(), errorMessage: err.message },
     });
 
-    await db.linkedAccount.updateMany({
-      where: { userId, platform: platform as any },
+    await prisma.linkedAccount.update({
+      where: { userId_platform: { userId, platform } },
       data: { status: "error", lastError: err.message },
     });
 
