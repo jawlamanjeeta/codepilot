@@ -26,6 +26,12 @@ importers:
       '@codepilot/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@codepilot/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@codepilot/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)

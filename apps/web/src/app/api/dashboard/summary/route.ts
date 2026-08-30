@@ -1,43 +1,45 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import {
+  getOverviewKpis,
+  getWeakTopics,
+  getStrongTopics,
+  getRecentSubmissions,
+  getRecommendations,
+  getLinkedAccounts,
+} from "@codepilot/db";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const userId = session.user.id;
 
-  const [totalSolved, byPlatform, recent, topicRows] = await Promise.all([
-    db.submission.count({ where: { userId, verdict: "ACCEPTED" } }),
-    db.submission.groupBy({
-      by: ["platform"],
-      where: { userId, verdict: "ACCEPTED" },
-      _count: { _all: true },
-    }),
-    db.submission.findMany({
-      where: { userId },
-      orderBy: { submittedAt: "desc" },
-      take: 10,
-      include: { problem: true },
-    }),
-    db.submission.findMany({
-      where: { userId, verdict: "ACCEPTED" },
-      include: { problem: true },
-    }),
-  ]);
+  try {
+    const [overview, weakTopics, strongTopics, recentSubmissions, recommendations, linkedAccounts] =
+      await Promise.all([
+        getOverviewKpis(userId),
+        getWeakTopics(userId, 5),
+        getStrongTopics(userId, 5),
+        getRecentSubmissions(userId, { limit: 10 }),
+        getRecommendations(userId, { status: "pending", limit: 5 }),
+        getLinkedAccounts(userId),
+      ]);
 
-  const topicCounts: Record<string, number> = {};
-  for (const row of topicRows) {
-    for (const tag of row.problem.tags) {
-      topicCounts[tag] = (topicCounts[tag] ?? 0) + 1;
-    }
+    return NextResponse.json({
+      overview,
+      weakTopics,
+      strongTopics,
+      recentSubmissions,
+      recommendations,
+      linkedAccounts,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch dashboard summary" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({
-    totalSolved,
-    byPlatform,
-    recent,
-    topicCounts,
-  });
 }

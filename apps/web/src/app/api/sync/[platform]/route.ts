@@ -1,22 +1,42 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { getLinkedAccount } from "@codepilot/db";
+import { validatePlatform } from "@codepilot/shared";
 import { runSync } from "@/lib/sync/runSync";
 
-export async function POST(_req: Request, { params }: { params: { platform: string } }) {
+export async function POST(
+  _req: Request,
+  props: { params: Promise<{ platform: string }> }
+) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const account = await db.linkedAccount.findUnique({
-    where: { userId_platform: { userId: session.user.id, platform: params.platform as any } },
-  });
-
-  if (!account) return NextResponse.json({ error: "no linked handle for platform" }, { status: 404 });
+  const { platform: rawPlatform } = await props.params;
 
   try {
-    await runSync(session.user.id, params.platform, account.handle);
-    return NextResponse.json({ ok: true });
+    const platform = validatePlatform(rawPlatform.toUpperCase());
+
+    const account = await getLinkedAccount(session.user.id, platform);
+    if (!account) {
+      return NextResponse.json(
+        { error: `No linked handle found for ${platform}` },
+        { status: 404 }
+      );
+    }
+
+    const result = await runSync(session.user.id, platform, account.handle);
+
+    return NextResponse.json({
+      ok: true,
+      platform,
+      itemsProcessed: result.processed,
+    });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || `Failed to sync ${rawPlatform}` },
+      { status: 500 }
+    );
   }
 }

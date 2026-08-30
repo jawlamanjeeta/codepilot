@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { getLinkedAccounts } from "@codepilot/db";
 
 export async function GET() {
-  console.log("Models on db:");
-
-  for (const key of Object.keys(db)) {
-    console.log(key);
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ ok: true });
+  try {
+    const accounts = await getLinkedAccounts(session.user.id);
+    return NextResponse.json({ accounts });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch linked handles" },
+      { status: 500 }
+    );
+  }
 }
