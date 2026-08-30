@@ -94,6 +94,7 @@ export function SkillGraphCanvas({ progress, mode, className }: SkillGraphCanvas
     let height = 0;
 
     function resize() {
+      if (!canvas || !ctx) return;
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
@@ -118,6 +119,7 @@ export function SkillGraphCanvas({ progress, mode, className }: SkillGraphCanvas
     }
 
     function draw() {
+      if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, width, height);
 
       const activeCount =
